@@ -1,0 +1,265 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nomenclature Gameplay Draft</title>
+<style>
+:root{--navy:#152842;--blue:#3378c9;--green:#2e8769;--purple:#755bc1;--gold:#d39b32;--ink:#18283d;--muted:#66768b;--line:#dbe5ef;--bg:#f4f8fc}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(#eaf4ff,#f8fafc 420px);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink)}
+header{background:var(--navy);color:white;padding:15px 5vw;display:flex;justify-content:space-between;align-items:center}.brand small{display:block;opacity:.7;text-transform:uppercase;letter-spacing:.1em}.brand b{font-size:19px}.xp{font-size:14px}
+main{max-width:1200px;margin:auto;padding:32px 22px 70px}.hero{text-align:center}.hero h1{font-size:44px;margin:8px}.hero p{color:var(--muted);font-size:17px}
+.modebar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:25px}.modebar button,.btn{border:0;padding:11px 16px;border-radius:12px;background:#183d69;color:#fff;font-weight:750;cursor:pointer}.modebar button.alt{background:#68778b}
+.panel{display:none}.panel.active{display:block}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.card,.box{background:white;border:1px solid var(--line);border-radius:19px;padding:20px;box-shadow:0 8px 25px #15375e0d}.card{cursor:pointer}.card:hover{transform:translateY(-2px)}.card h3{margin:8px 0}.donecheck{display:none;float:right;background:#2e8769;color:white;width:25px;height:25px;border-radius:50%;text-align:center;line-height:25px;font-size:15px}.donecheck.show{display:inline-block}.card p,.hint{color:var(--muted);font-size:14px}
+.game{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;margin-top:20px}.eyebrow{font-size:12px;font-weight:850;letter-spacing:.1em;color:#748399}.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:46px;font-weight:650;margin:16px 0;min-height:62px}.name{font-size:32px;font-weight:800;margin:17px 0;min-height:62px}
+.choices{display:flex;flex-wrap:wrap;gap:9px}.choices button{background:white;border:2px solid #cbd8e7;border-radius:12px;padding:11px 15px;font-weight:800;cursor:pointer}.choices button:hover{border-color:#668ebc}
+.entry{font-size:20px;width:100%;padding:13px;border:2px solid #cbd8e7;border-radius:12px}.render{margin-top:12px;background:#f3f7fb;border:1px solid var(--line);border-radius:13px;padding:13px;min-height:58px}.render .chem{font-size:30px;margin:0;min-height:0}
+.feedback{min-height:30px;font-weight:750;margin:12px 0}.ok{color:#247455}.bad{color:#a74c48}.rule{background:#f7f9fc;border-left:4px solid #79a0cc;padding:12px;border-radius:7px;font-size:14px;margin:12px 0}.score{display:flex;gap:15px;flex-wrap:wrap}.pill{background:#eef4fa;padding:7px 10px;border-radius:20px;font-size:13px;font-weight:700}
+.progress{height:9px;background:#e5ecf3;border-radius:10px;overflow:hidden;margin:12px 0}.progress i{height:100%;display:block;background:#4d8bd0;width:0}
+#capRight{opacity:.45;pointer-events:none}.route-ok #capRight{opacity:1;pointer-events:auto}
+kbd{background:#edf2f7;border:1px solid #ccd6e0;border-bottom-width:2px;border-radius:5px;padding:1px 5px}.subhelp{font-size:13px;color:var(--muted);margin-top:7px}
+@media(max-width:850px){.cards,.game{grid-template-columns:1fr}.hero h1{font-size:34px}}
+</style></head><body>
+<header><div class="brand"><small>Nomenclature Course · Gameplay Draft</small><b>Chemistry Skills Academy</b></div><div class="xp"><b id="xp">0 XP</b> · gameplay preview</div></header>
+<main><section class="hero"><div class="eyebrow">PLAYABLE PROTOTYPE</div><h1>Nomenclature Workshop</h1><p>Try the actual stations, then switch to Compound Control to test the mixed capstone.</p></section>
+<div class="modebar"><button onclick="location.href='../index.html'">← Course Home</button><button id="stationsBack" onclick="home()" style="display:none">← Workshop Stations</button></div>
+
+<section id="home" class="panel active">
+<div class="eyebrow" style="margin:10px 0">STAGE 02 · NOMENCLATURE WORKSHOP</div><div class="cards">
+<div class="card" onclick="startStation('classify')"><div class="eyebrow">STATION 01</div><h3>Sorting Bay <span id="check-classify" class="donecheck">✓</span></h3><p>Rapidly classify compounds as ionic, molecular, or acid. Ten-item round.</p></div>
+<div class="card" onclick="startStation('ionic')"><div class="eyebrow">STATION 02</div><h3>Ionic Forge <span id="check-ionic" class="donecheck">✓</span></h3><p>Move both directions between ionic names and formulas, including Roman numerals and polyatomic ions.</p></div>
+<div class="card" onclick="startStation('molecular')"><div class="eyebrow">STATION 03</div><h3>Prefix Reactor <span id="check-molecular" class="donecheck">✓</span></h3><p>Practice molecular prefixes in both name → formula and formula → name directions.</p></div>
+<div class="card" onclick="startStation('acid')"><div class="eyebrow">STATION 04</div><h3>Acid Works <span id="check-acid" class="donecheck">✓</span></h3><p>Practice the acid examples represented in the worksheet in both directions.</p></div>
+</div></section>
+
+<section id="work" class="panel"><div class="box"><div class="score"><span class="pill" id="stationTitle"></span><span class="pill" id="round"></span><span class="pill" id="correct"></span></div><div class="progress"><i id="prog"></i></div>
+<div class="game"><div><div class="eyebrow" id="task"></div><div id="prompt"></div><div id="choiceArea"></div><div id="inputArea"></div><div id="fb" class="feedback"></div><button id="next" class="btn" style="display:none" onclick="nextStation()">Next compound →</button></div>
+<div><div class="eyebrow">RULE BENCH</div><div id="rule" class="rule"></div><div class="hint">The Workshop deliberately tells students which station they are in. This is the scaffold. Compound Control removes that clue.</div></div></div></div></section>
+
+<section id="cap" class="panel"><div class="box"><div class="score"><span class="pill">COMPOUND CONTROL</span><span class="pill" id="capRound"></span><span class="pill" id="capScore"></span><button class="pill" style="border:0;cursor:pointer" onclick="if(confirm('Clear saved Compound Control progress and start over?')){clearCapProgress();localStorage.removeItem('nomenclature-capstone-complete');startCap()}">Reset capstone</button></div><div class="progress"><i id="capProg"></i></div>
+<div class="game" id="capGame"><div><div class="eyebrow">STEP 1 · ROUTE THE INCOMING COMPOUND</div><div id="capPrompt"></div><div class="choices"><button onclick="route('ionic')">IONIC</button><button onclick="route('molecular')">MOLECULAR</button><button onclick="route('acid')">ACID</button></div><div id="routeFb" class="feedback"></div></div>
+<div id="capRight"><div class="eyebrow">STEP 2 · TRANSLATION STATION</div><h3 id="capTask"></h3><div id="capInput"></div><div id="capFb" class="feedback"></div><button id="capNext" class="btn" style="display:none" onclick="nextCap()">Next compound →</button></div></div></div></section>
+</main>
+<script>
+const items=[["formula", "NaCl", "ionic", "sodium chloride"], ["formula", "CO2", "molecular", "carbon dioxide"], ["formula", "BaCrO4", "ionic", "barium chromate"], ["formula", "Ca(OH)2", "ionic", "calcium hydroxide"], ["formula", "HCl(aq)", "acid", "hydrochloric acid"], ["formula", "Na2SO4", "ionic", "sodium sulfate"], ["formula", "P2O3", "molecular", "diphosphorus trioxide"], ["formula", "KNO2", "ionic", "potassium nitrite"], ["formula", "Fe(NO3)3", "ionic", "iron(III) nitrate"], ["formula", "(NH4)3PO4", "ionic", "ammonium phosphate"], ["formula", "H2SO4(aq)", "acid", "sulfuric acid"], ["formula", "(NH4)2S", "ionic", "ammonium sulfide"], ["formula", "XeF4", "molecular", "xenon tetrafluoride"], ["name", "Barium Chloride", "ionic", "BaCl2"], ["name", "Dihydrogen Monoxide", "molecular", "H2O"], ["name", "Lead (II) Iodide", "ionic", "PbI2"], ["name", "Nitric Acid", "acid", "HNO3"], ["name", "Potassium Chromate", "ionic", "K2CrO4"], ["name", "Titanium (IV) Bromide", "ionic", "TiBr4"], ["name", "Copper (II) Sulfate", "ionic", "CuSO4"], ["name", "Iodine Pentafluoride", "molecular", "IF5"], ["name", "Calcium Cyanide", "ionic", "Ca(CN)2"], ["name", "Hydrobromic Acid", "acid", "HBr"], ["name", "Magnesium Sulfite", "ionic", "MgSO3"], ["name", "Magnesium Sulfate", "ionic", "MgSO4"], ["name", "Magnesium Sulfide", "ionic", "MgS"], ["formula", "HClO3(aq)", "acid", "chloric acid"], ["formula", "HNO2(aq)", "acid", "nitrous acid"], ["formula", "Cu2CO3", "ionic", "copper(I) carbonate"], ["formula", "FeSO4", "ionic", "iron(II) sulfate"], ["formula", "P2S5", "molecular", "diphosphorus pentasulfide"], ["formula", "Al2O3", "ionic", "aluminum oxide"], ["formula", "N2O", "molecular", "dinitrogen monoxide"], ["formula", "KCN", "ionic", "potassium cyanide"], ["formula", "Ag2CO3", "ionic", "silver carbonate"], ["formula", "CrF3", "ionic", "chromium(III) fluoride"], ["formula", "SnS2", "ionic", "tin(IV) sulfide"], ["formula", "H2SO3(aq)", "acid", "sulfurous acid"], ["formula", "Al(C2H3O2)3", "ionic", "aluminum acetate"], ["name", "Phosphorus Tribromide", "molecular", "PBr3"], ["name", "Potassium Permanganate", "ionic", "KMnO4"], ["name", "Ammonium Chloride", "ionic", "NH4Cl"], ["name", "Carbon Disulfide", "molecular", "CS2"], ["name", "Copper (I) Carbonate", "ionic", "Cu2CO3"], ["name", "Lead (II) Acetate", "ionic", "Pb(C2H3O2)2"], ["name", "Phosphoric Acid", "acid", "H3PO4"], ["name", "Bismuth (III) Chloride", "ionic", "BiCl3"], ["name", "Acetic Acid", "acid", "HC2H3O2"], ["name", "Arsenic (III) Iodide", "ionic", "AsI3"], ["name", "Sulfur Tetrafluoride", "molecular", "SF4"], ["name", "Tin (II) Fluoride", "ionic", "SnF2"], ["name", "Sodium Peroxide", "ionic", "Na2O2"]];
+let xp=Math.max(0,Number(localStorage.getItem('pai-xp-v1')||0)), pool=[], pos=0, good=0, station='', current=null, capPool=[],capPos=0,capGood=0,routed=false, ionicFollowup=false, awaitingNext=false, capIonicFollowup=false; let completed=JSON.parse(localStorage.getItem('nomDraftCompleted')||'{}');
+const $=x=>document.getElementById(x);
+
+function paintChecks(){
+ ['classify','ionic','molecular','acid'].forEach(k=>{
+   const el=$('check-'+k); if(el) el.classList.toggle('show',!!completed[k]);
+ });
+}
+function markComplete(k){
+ completed[k]=true;
+ localStorage.setItem('nomDraftCompleted',JSON.stringify(completed));
+ paintChecks();
+}
+
+function addXP(n){xp+=n;localStorage.setItem('pai-xp-v1',String(xp));$('xp').textContent=xp+' XP'}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function show(id){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));$(id).classList.add('active')}
+function home(){show('home')}
+function resetDraft(){xp=0;completed={};localStorage.removeItem('nomDraftCompleted');$('xp').textContent='0 XP';paintChecks();home()}
+function prettyFormula(s){
+ let t=s.replace(/\(aq\)/g,'§AQ§');
+ t=t.replace(/([A-Za-z\)])(\d+)/g,(m,a,n)=>a+[...n].map(d=>'₀₁₂₃₄₅₆₇₈₉'[+d]).join(''));
+ return t.replace('§AQ§','(aq)');
+}
+function promptHTML(x){return x[0]==='formula'?`<div class="chem">${prettyFormula(x[1])}</div>`:`<div class="name">${x[1]}</div>`}
+
+
+let advanceTimer=null;
+function queueAdvance(fn,ms=650){
+  awaitingNext=true;
+  clearTimeout(advanceTimer);
+  advanceTimer=setTimeout(()=>{ if(awaitingNext) fn(); },ms);
+}
+
+const variableIonic = new Set([
+ 'Fe(NO3)3','Lead (II) Iodide','Titanium (IV) Bromide','Copper (II) Sulfate',
+ 'Cu2CO3','FeSO4','CrF3','SnS2','Copper (I) Carbonate','Lead (II) Acetate',
+ 'Bismuth (III) Chloride','Arsenic (III) Iodide','Tin (II) Fluoride'
+]);
+function chargeType(x){
+ if(x[2]!=='ionic') return null;
+ return variableIonic.has(x[1]) ? 'variable' : 'fixed';
+}
+
+const rules={
+ classify:"Look first at what kind of substance is represented. In this draft, the same ionic / molecular / acid categories used by the worksheet are practiced repeatedly.",
+ ionic:"Ionic compounds require charge balance. Variable-charge metals may require a Roman numeral; polyatomic ions stay together as units.",
+ molecular:"Molecular compounds use prefixes to communicate atom counts. The second element takes an -ide ending.",
+ acid:"For this draft, practice the binary and oxyacid examples represented in the supplied worksheet. The aqueous formulas are displayed with (aq)."
+};
+function startStation(s){
+ if(!polyMasteredForGate()){alert('Stage 2 is locked. Complete Polyatomic Ion Mastery first.');location.href='../index.html';return;}
+ station=s;if($('stationsBack'))$('stationsBack').style.display='inline-block'; pos=0;good=0;
+ pool=s==='classify'?shuffle(items).slice(0,10):shuffle(items.filter(x=>x[2]===s)).slice(0,Math.min(10,items.filter(x=>x[2]===s).length));
+ show('work'); $('stationTitle').textContent={classify:'SORTING BAY',ionic:'IONIC FORGE',molecular:'PREFIX REACTOR',acid:'ACID WORKS'}[s];$('rule').textContent=rules[s];loadStation()
+}
+function loadStation(){
+ current=pool[pos];ionicFollowup=false;awaitingNext=false;$('round').textContent=`${pos+1} / ${pool.length}`;$('correct').textContent=`${good} correct`;$('prog').style.width=(pos/pool.length*100)+'%';$('fb').textContent='';$('fb').className='feedback';$('next').style.display='none';$('choiceArea').innerHTML='';$('inputArea').innerHTML='';
+ $('prompt').innerHTML=promptHTML(current);
+ if(station==='classify'){
+  $('task').textContent='CLASSIFY THIS COMPOUND';$('choiceArea').innerHTML=`<div class="choices"><button onclick="stationChoice('ionic')">IONIC</button><button onclick="stationChoice('molecular')">MOLECULAR</button><button onclick="stationChoice('acid')">ACID</button></div>`;
+ } else {
+  $('task').textContent=current[0]==='formula'?'NAME THIS COMPOUND':'WRITE THE CHEMICAL FORMULA';
+  makeEntry('inputArea','ans',current[0]==='name');
+  setTimeout(()=>{const a=$('ans');if(a)a.focus();},0);
+ }
+}
+function makeEntry(area,id,isFormula){
+ $(area).innerHTML=`<input id="${id}" class="entry" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" placeholder="${isFormula?'Type formula, e.g. Ca(NO3)2':'Type compound name'}" oninput="${isFormula?`renderTyped('${id}','${id}render')`:''}"><div id="${id}render" class="render" style="${isFormula?'':'display:none'}">${isFormula?'<div class="chem">Formula preview</div>':''}</div><button class="btn" style="margin-top:10px" onclick="${id==='ans'?'checkStation()':'checkCap()'}">Check answer</button>${isFormula?'<div class="subhelp">Type normal numbers. The display converts them to subscripts automatically: <kbd>Ca(NO3)2</kbd> → Ca(NO₃)₂.</div>':''}`;
+}
+function renderTyped(id,out){$(out).innerHTML=`<div class="chem">${prettyFormula($(id).value)||'Formula preview'}</div>`}
+function normName(s){return s.toLowerCase().replace(/[–—]/g,'-').replace(/\s+/g,' ').trim()}
+function normFormula(s){return s.replace(/\s+/g,'').replace(/\(aq\)/gi,'').replace(/[₀₁₂₃₄₅₆₇₈₉]/g,c=>String('₀₁₂₃₄₅₆₇₈₉'.indexOf(c))).toLowerCase()}
+function isRight(v){return current[0]==='formula'?normName(v)===normName(current[3]):normFormula(v)===normFormula(current[3])}
+function stationChoice(v){
+ if(v!==current[2]){$('fb').textContent='Not quite — try the other classification routes.';$('fb').className='feedback bad';return;}
+ if(station==='classify' && current[2]==='ionic'){
+   addXP(3);
+   $('fb').textContent='✓ Ionic. One more classification: is the metal/cation fixed or variable charge?';
+   $('fb').className='feedback ok';
+   $('choiceArea').innerHTML=`<div class="eyebrow" style="margin:12px 0 8px">IONIC FOLLOW-UP</div><div class="choices"><button onclick="sortingCharge('fixed')">FIXED CHARGE</button><button onclick="sortingCharge('variable')">VARIABLE CHARGE</button></div>`;
+   return;
+ }
+ good++;addXP(3);$('correct').textContent=`${good} correct`;
+ $('fb').textContent='✓ Correct classification. Loading next compound…';$('fb').className='feedback ok';
+ queueAdvance(nextStation);
+}
+function sortingCharge(v){
+ const key=chargeType(current);
+ if(v===key){
+   good++;addXP(3);$('correct').textContent=`${good} correct`;
+   $('fb').textContent=`✓ Correct — ${v} charge. Loading next compound…`;
+   $('fb').className='feedback ok';$('choiceArea').innerHTML='';
+   queueAdvance(nextStation,850);
+ } else {
+   $('fb').textContent='Not quite. Decide whether this cation needs its charge specified in the compound name.';
+   $('fb').className='feedback bad';
+ }
+}
+function checkStation(){let v=$('ans').value;if(isRight(v))finishStation(true,'✓ Correct. +6 XP');else{$('fb').textContent='Not yet. Use the rule bench and try again.';$('fb').className='feedback bad'}}
+function finishStation(ok,msg){
+ if(station==='ionic' && !ionicFollowup){
+   ionicFollowup=true;
+   addXP(5);
+   $('fb').textContent='✓ Nomenclature correct. Now classify the metal/cation charge behavior.';
+   $('fb').className='feedback ok';
+   $('inputArea').innerHTML='';
+   $('choiceArea').innerHTML=`<div class="eyebrow" style="margin:12px 0 8px">FOLLOW-UP · METAL/CATION CHARGE</div><div class="choices"><button onclick="ionicCharge('fixed')">FIXED CHARGE</button><button onclick="ionicCharge('variable')">VARIABLE CHARGE</button></div>`;
+   $('task').textContent='IONIC CHECKPOINT';
+   return;
+ }
+ good++; addXP(station==='classify'?3:6); $('correct').textContent=`${good} correct`;
+ $('fb').textContent=msg.replace(/\+\d+ XP/,'')+' Loading next compound…'; $('fb').className='feedback ok';
+ queueAdvance(nextStation);
+}
+function ionicCharge(v){
+ const key=chargeType(current);
+ if(v===key){
+   good++; addXP(3); $('correct').textContent=`${good} correct`;
+   $('fb').textContent=`✓ Correct — ${v==='variable'?'this metal can form more than one common charge, so the Roman numeral matters':'this cation is treated as fixed-charge in this nomenclature set'}. Loading next compound…`;
+   $('fb').className='feedback ok'; $('choiceArea').innerHTML='';
+   queueAdvance(nextStation,850);
+ } else {
+   $('fb').textContent='Not quite. Decide whether the cation needs its charge specified in the compound name.';
+   $('fb').className='feedback bad';
+ }
+}
+function nextStation(){awaitingNext=false;pos++;if(pos>=pool.length){markComplete(station);$('prompt').innerHTML=`<div class="name">Round complete!</div>`;$('task').textContent='WORKSHOP RESULTS';$('choiceArea').innerHTML='';$('inputArea').innerHTML='';$('fb').textContent=`${good} / ${pool.length} correct on first completion attempts. This draft does not yet impose a mastery threshold.`;$('next').textContent='Choose another station';$('next').onclick=home;$('next').style.display='inline-block';$('prog').style.width='100%'}else loadStation()}
+
+
+function polyMasteredForGate(){
+ try{
+  const p=JSON.parse(localStorage.getItem('pai-passport-v2')||'{}');
+  const vals=Object.values(p);
+  return vals.length>=22 && vals.every(v=>Number(v.formula)>=5&&Number(v.name)>=5);
+ }catch(e){return false}
+}
+function workshopMasteredForGate(){
+ try{const w=JSON.parse(localStorage.getItem('nomDraftCompleted')||'{}');return ['classify','ionic','molecular','acid'].every(k=>w[k])}catch(e){return false}
+}
+
+const capProgressKey='nomenclature-capstone-progress-v1';
+function loadCapProgress(){
+ try{
+   const x=JSON.parse(localStorage.getItem(capProgressKey)||'null');
+   if(x && Array.isArray(x.remaining) && Array.isArray(x.completed)) return x;
+ }catch(e){}
+ return null;
+}
+function saveCapProgress(){
+ try{
+   localStorage.setItem(capProgressKey,JSON.stringify({
+     remaining:capPool.slice(capPos).map(x=>items.indexOf(x)),
+     completed:capPool.slice(0,capPos).map(x=>items.indexOf(x)),
+     updated:new Date().toISOString()
+   }));
+ }catch(e){}
+}
+function clearCapProgress(){localStorage.removeItem(capProgressKey)}
+
+function startCap(){
+ if($('stationsBack'))$('stationsBack').style.display='none';
+ if(!workshopMasteredForGate()){alert('Stage 3 is locked. Complete all four Nomenclature Workshop stations first.');location.href='../index.html';return;}
+ const saved=loadCapProgress();
+ if(saved && saved.remaining.length){
+   capPool=saved.remaining.map(i=>items[i]).filter(Boolean);
+   capPos=0; capGood=saved.completed.length;
+ } else {
+   capPool=shuffle(items); capPos=0; capGood=0;
+   localStorage.removeItem('nomenclature-capstone-complete');
+ }
+ show('cap');loadCap();
+}
+function loadCap(){current=capPool[capPos];routed=false;awaitingNext=false;capIonicFollowup=false;$('capGame').classList.remove('route-ok');$('capRound').textContent=`Compound ${Math.min(capGood+1,52)} / 52`;$('capScore').textContent=`${capGood} saved`;$('capProg').style.width=(capGood/52*100)+'%';$('capPrompt').innerHTML=promptHTML(current);$('routeFb').textContent='';$('capFb').textContent='';$('capNext').style.display='none';$('capInput').innerHTML='';$('capTask').textContent='Correctly classify the compound to unlock this station.'}
+function route(v){if(v===current[2]){routed=true;$('capGame').classList.add('route-ok');$('routeFb').textContent='✓ Correct route. +3 XP';$('routeFb').className='feedback ok';addXP(3);$('capTask').textContent=current[0]==='formula'?'Give the compound name':'Write the chemical formula';makeEntry('capInput','capAns',current[0]==='name');setTimeout(()=>{const a=$('capAns');if(a)a.focus();},0)}else{$('routeFb').textContent='Wrong route — reconsider the compound type.';$('routeFb').className='feedback bad'}}
+function checkCap(){
+ let v=$('capAns').value;
+ if(!isRight(v)){$('capFb').textContent='Translation is not correct yet. Try again.';$('capFb').className='feedback bad';return;}
+ addXP(8);
+ if(current[2]==='ionic' && !capIonicFollowup){
+   capIonicFollowup=true;
+   $('capFb').textContent='✓ Translation correct. Final ionic checkpoint: fixed or variable charge?';
+   $('capFb').className='feedback ok';
+   $('capInput').innerHTML=`<div class="eyebrow" style="margin:12px 0 8px">IONIC FOLLOW-UP · METAL/CATION CHARGE</div><div class="choices"><button onclick="capCharge('fixed')">FIXED CHARGE</button><button onclick="capCharge('variable')">VARIABLE CHARGE</button></div>`;
+   return;
+ }
+ $('capFb').textContent='✓ Translation correct. Compound complete; progress saved.';
+ $('capFb').className='feedback ok';
+ completeCapItem();
+}
+function capCharge(v){
+ const key=chargeType(current);
+ if(v===key){
+   addXP(3);
+   $('capFb').textContent=`✓ Correct — ${v} charge. Compound complete; progress saved.`;
+   $('capFb').className='feedback ok';
+   $('capInput').innerHTML='';
+   completeCapItem();
+ } else {
+   $('capFb').textContent='Not quite. Decide whether this cation needs its charge specified in the compound name.';
+   $('capFb').className='feedback bad';
+ }
+}
+function completeCapItem(){
+ capGood++;
+ $('capScore').textContent=`${capGood} saved`;
+ $('capFb').className='feedback ok';
+ queueAdvance(nextCap,850);
+}
+function nextCap(){awaitingNext=false;capPos++;saveCapProgress();if(capGood>=52 || capPos>=capPool.length){localStorage.setItem('nomenclature-capstone-complete','true');clearCapProgress();$('capPrompt').innerHTML='<div class="name">Shift complete!</div>';$('capRight').innerHTML=`<div class="eyebrow">RESULTS</div><h2>${capGood} / ${capPool.length} compounds processed</h2><p class="hint">All 52 mixed nomenclature items have been completed. Course Home now recognizes the capstone requirement.</p><button class="btn" onclick="startCap()">Play another shift</button>`;$('capGame').classList.add('route-ok');$('capProg').style.width='100%'}else loadCap()}
+
+document.addEventListener('keydown',e=>{
+ if(e.key!=='Enter') return;
+ const active=document.querySelector('.panel.active')?.id;
+ if(active==='work'){
+   if(awaitingNext){e.preventDefault();clearTimeout(advanceTimer);nextStation();return;}
+   if(document.activeElement?.id==='ans'){e.preventDefault();checkStation();return;}
+ }
+ if(active==='cap'){
+   if(awaitingNext){e.preventDefault();clearTimeout(advanceTimer);nextCap();return;}
+   if(document.activeElement?.id==='capAns'){e.preventDefault();checkCap();return;}
+ }
+});
+$('xp').textContent=xp+' XP';paintChecks();if(localStorage.getItem('nom-open-cap')==='1'){localStorage.removeItem('nom-open-cap');startCap();}
+</script></body></html>
